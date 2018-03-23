@@ -19,9 +19,18 @@ package me.kimloong.odata.parser;
 import me.kimloong.odata.model.Condition;
 
 /**
+ * 条件解析器接口
+ *
  * @author KimLoong
  */
 public interface ConditionParser {
 
+    /**
+     * 通过实体与filter解析条件
+     *
+     * @param entityClass 对应用实体
+     * @param filters     filter文本
+     * @return 条件
+     */
     Condition parse(Class entityClass, String filters);
 }

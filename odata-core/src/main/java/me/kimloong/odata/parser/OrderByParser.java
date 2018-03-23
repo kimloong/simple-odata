@@ -16,8 +16,21 @@
 
 package me.kimloong.odata.parser;
 
+import org.springframework.data.domain.Sort;
+
 /**
+ * 排序解析器接口
+ *
  * @author KimLoong
  */
 public interface OrderByParser {
+
+    /**
+     * 通过实体与filter解析排序
+     *
+     * @param entityClass 对应用实体
+     * @param orderBys    orderBy文本
+     * @return 排序
+     */
+    Sort parse(Class entityClass, String orderBys);
 }

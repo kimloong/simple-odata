@@ -19,6 +19,7 @@ package me.kimloong.odata.parser.string;
 import com.google.common.base.Strings;
 import me.kimloong.odata.model.ODataField;
 import me.kimloong.odata.parser.FieldResolver;
+import me.kimloong.odata.parser.OrderByParser;
 import org.springframework.data.domain.Sort;
 
 /**
@@ -26,7 +27,7 @@ import org.springframework.data.domain.Sort;
  *
  * @author KimLoong
  */
-public class OrderByStringParser {
+public class OrderByStringParser implements OrderByParser {
 
     private static final int SORT_VALUE_LENGTH = 2;
     private static final int SORT_DEFAULT_DIRECTION_VALUE_LENGTH = 1;
@@ -37,6 +38,7 @@ public class OrderByStringParser {
         this.fieldResolver = fieldResolver;
     }
 
+    @Override
     public Sort parse(Class entityClass, String orderBys) {
         if (Strings.isNullOrEmpty(orderBys)) {
             return null;
