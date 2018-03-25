@@ -19,6 +19,7 @@ package me.kimloong.odata.parser;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import me.kimloong.odata.annotation.FieldMapping;
 import me.kimloong.odata.model.ODataField;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -50,7 +51,11 @@ public class FieldResolver {
      * @return 内部字段信息
      */
     public ODataField resolve(Class entityClass, String outerFieldName) {
-        return fieldNameCache.getUnchecked(Pair.of(entityClass, outerFieldName));
+        try {
+            return fieldNameCache.getUnchecked(Pair.of(entityClass, outerFieldName));
+        } catch (UncheckedExecutionException exception) {
+            throw (RuntimeException) exception.getCause();
+        }
     }
 
     private static class FieldCacheLoader extends CacheLoader<Pair<Class, String>, ODataField> {
@@ -65,12 +70,15 @@ public class FieldResolver {
         public ODataField load(Pair<Class, String> key) throws Exception {
             Class entityClass = key.getLeft();
             String outerFieldName = key.getRight();
-            return innerResolve(entityClass, outerFieldName);
+            String innerFieldName = fieldNameConverter.convert(outerFieldName);
+            return innerResolve(entityClass, outerFieldName, innerFieldName);
         }
 
-        private ODataField innerResolve(Class entityClass, String outerFieldName) {
+        private ODataField innerResolve(Class entityClass, String outerFieldName, String innerFieldName) {
 
-            String innerFieldName = fieldNameConverter.convert(outerFieldName);
+            if (Object.class == entityClass) {
+                throw new IllegalArgumentException("field not found:" + outerFieldName);
+            }
 
             ODataField odataField = getMappingFieldName(entityClass, innerFieldName);
             if (null != odataField) {
@@ -80,7 +88,7 @@ public class FieldResolver {
             Field field = FieldUtils.getField(entityClass, innerFieldName, true);
 
             if (null == field) {
-                throw new IllegalArgumentException("field not found:" + outerFieldName);
+                return innerResolve(entityClass.getSuperclass(), outerFieldName, innerFieldName);
             }
             return new ODataField(field.getName(), field.getType());
         }

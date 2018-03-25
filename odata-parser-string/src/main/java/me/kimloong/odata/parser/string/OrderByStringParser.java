@@ -43,7 +43,7 @@ public class OrderByStringParser implements OrderByParser {
         if (Strings.isNullOrEmpty(orderBys)) {
             return null;
         }
-        String[] orderByArray = orderBys.split("\\s+,\\s+");
+        String[] orderByArray = orderBys.split("\\s*,\\s*");
         int length = orderByArray.length;
         Sort.Order[] orders = new Sort.Order[length];
         for (int i = 0; i < length; i++) {

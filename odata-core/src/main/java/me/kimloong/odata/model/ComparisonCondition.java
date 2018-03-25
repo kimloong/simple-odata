@@ -64,6 +64,11 @@ public class ComparisonCondition implements Condition {
                 Objects.equals(value, condition.value);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(field, operator, value);
+    }
+
     public String getField() {
         return field;
     }

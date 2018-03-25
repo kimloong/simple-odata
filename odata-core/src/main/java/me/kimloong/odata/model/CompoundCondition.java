@@ -16,6 +16,13 @@
 
 package me.kimloong.odata.model;
 
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
 /**
  * 联合(逻辑)运算过滤条件
  * 如: 与、或、非
@@ -26,11 +33,14 @@ public class CompoundCondition implements Condition {
 
     private CompoundOperator operator;
 
-    private Condition[] conditions;
+    private Set<Condition> conditions;
 
     public CompoundCondition(CompoundOperator operator, Condition... conditions) {
         this.operator = operator;
-        this.conditions = conditions;
+
+        Set<Condition> conditionSet = new HashSet<>(conditions.length);
+        Collections.addAll(conditionSet, conditions);
+        this.conditions = Collections.unmodifiableSet(conditionSet);
     }
 
     @Override
@@ -38,7 +48,30 @@ public class CompoundCondition implements Condition {
         return operator;
     }
 
-    public Condition[] getConditions() {
+    public Set<Condition> getConditions() {
         return conditions;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtils.join(conditions, " " + operator.name() + " ");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CompoundCondition that = (CompoundCondition) o;
+        return operator == that.operator &&
+                Objects.equals(conditions, that.conditions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(operator, conditions);
     }
 }

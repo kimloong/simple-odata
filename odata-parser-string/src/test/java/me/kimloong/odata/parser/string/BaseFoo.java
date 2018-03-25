@@ -14,25 +14,26 @@
  *    limitations under the License.
  */
 
-package me.kimloong.odata.parser;
+package me.kimloong.odata.parser.string;
 
-import me.kimloong.odata.model.Condition;
+import me.kimloong.odata.annotation.FieldMapping;
 
 /**
- * 条件解析器接口
+ * 测试实体类 基类
  *
  * @author KimLoong
  */
-public interface ConditionParser {
+@FieldMapping(field = "baseField", mapping = "baseMapping", type = Integer.class)
+@FieldMapping(field = "notInBaseEntityField", mapping = "notInBaseEntityMapping", type = String.class)
+public class BaseFoo {
 
-    char STRING_TYPE_WRAP_CHAR = '\'';
+    private Integer baseMapping;
 
-    /**
-     * 通过实体与filter解析条件
-     *
-     * @param entityClass 对应用实体
-     * @param filters     filter文本
-     * @return 条件
-     */
-    Condition parse(Class entityClass, String filters);
+    public Integer getBaseMapping() {
+        return baseMapping;
+    }
+
+    public void setBaseMapping(Integer baseMapping) {
+        this.baseMapping = baseMapping;
+    }
 }

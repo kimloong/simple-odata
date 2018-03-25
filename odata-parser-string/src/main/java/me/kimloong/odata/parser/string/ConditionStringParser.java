@@ -21,7 +21,9 @@ import me.kimloong.odata.model.*;
 import me.kimloong.odata.parser.ConditionParser;
 import me.kimloong.odata.parser.FieldResolver;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -35,10 +37,41 @@ public class ConditionStringParser implements ConditionParser {
 
     private static final int FILTER_VALUE_LENGTH = 3;
 
+    /**
+     * 字段解析器
+     */
     private FieldResolver fieldResolver;
 
-    public ConditionStringParser(FieldResolver fieldResolver) {
+    /**
+     * 日期格式
+     */
+    private FastDateFormat dateFormat = DateFormatUtils.ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT;
+
+    /**
+     * 是否支持使用
+     */
+    private boolean supportTimestamp = true;
+
+    private boolean supportStringEnum = true;
+
+    private boolean supportOriginEnum = true;
+
+    public ConditionStringParser(
+            FieldResolver fieldResolver) {
         this.fieldResolver = fieldResolver;
+    }
+
+    public ConditionStringParser(
+            FieldResolver fieldResolver,
+            FastDateFormat dateFormat,
+            boolean supportTimestamp,
+            boolean supportStringEnum,
+            boolean supportOriginEnum) {
+        this(fieldResolver);
+        this.dateFormat = dateFormat;
+        this.supportTimestamp = dateFormat == null || supportTimestamp;
+        this.supportStringEnum = supportStringEnum;
+        this.supportOriginEnum = (!supportStringEnum) || supportOriginEnum;
     }
 
     @Override
@@ -96,28 +129,49 @@ public class ConditionStringParser implements ConditionParser {
         Object result = null;
         Class fieldWrapType = Primitives.wrap(fieldType);
         if (String.class == fieldWrapType) {
-            result = filterValue;
+            result = StringUtils.unwrap(filterValue, STRING_TYPE_WRAP_CHAR);
         } else if (Integer.class == fieldWrapType) {
             result = Integer.parseInt(filterValue);
         } else if (Boolean.class == fieldWrapType) {
             result = Boolean.parseBoolean(filterValue);
         } else if (Long.class == fieldWrapType) {
             result = Long.parseLong(filterValue);
+        } else if (Date.class.isAssignableFrom(fieldWrapType)) {
+            result = parseDateValue(filterValue);
+        } else if (fieldWrapType.isEnum()) {
+            result = parseEnumValue(filterValue, fieldWrapType);
         } else if (Float.class == fieldWrapType) {
             result = Float.parseFloat(filterValue);
         } else if (Double.class == fieldWrapType) {
             result = Double.parseDouble(filterValue);
-        } else if (Date.class == fieldWrapType) {
-            try {
-                result = DateFormatUtils.ISO_8601_EXTENDED_DATETIME_TIME_ZONE_FORMAT.parse(filterValue);
-            } catch (ParseException e) {
-                throw new IllegalArgumentException("can't parse date from " + filterValue + ",please use ISO8601", e);
-            }
         } else if (Short.class == fieldWrapType) {
             result = Short.parseShort(filterValue);
         } else if (Byte.class == fieldWrapType) {
             result = Byte.parseByte(filterValue);
         }
         return result;
+    }
+
+    private Object parseEnumValue(String filterValue, Class fieldType) {
+        if (supportOriginEnum && NumberUtils.isDigits(filterValue)) {
+            return fieldType.getEnumConstants()[Integer.parseInt(filterValue)];
+        }
+        return Enum.valueOf(fieldType, StringUtils.unwrap(filterValue, STRING_TYPE_WRAP_CHAR));
+    }
+
+    private Date parseDateValue(String filterValue) {
+        try {
+            if (supportTimestamp && NumberUtils.isDigits(filterValue)) {
+                return new Date(Long.parseLong(filterValue));
+            }
+            if (null == dateFormat) {
+                throw new IllegalArgumentException("can't parse date from "
+                        + filterValue);
+            }
+            return dateFormat.parse(StringUtils.unwrap(filterValue, STRING_TYPE_WRAP_CHAR));
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("can't parse date from "
+                    + filterValue, e);
+        }
     }
 }
