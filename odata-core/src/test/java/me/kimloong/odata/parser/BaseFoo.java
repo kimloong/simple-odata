@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-package me.kimloong.odata.parser.string;
+package me.kimloong.odata.parser;
 
 import me.kimloong.odata.annotation.FieldMapping;
 

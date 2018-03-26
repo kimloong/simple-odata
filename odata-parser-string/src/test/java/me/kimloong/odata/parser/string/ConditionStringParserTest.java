@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * ConditionStringParser Test
@@ -207,74 +206,6 @@ public class ConditionStringParserTest {
     public void parseShouldAllowFieldValueIsEnumTypeAndValueIsOrigin() {
         Condition expected = new ComparisonCondition("enumField", ComparisonOperator.EQ, Foo.Type.A);
         String filter = "enumField eq 0";
-
-        Condition actual = parser.parse(Foo.class, filter);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void parseShouldAllowExistedField() {
-        Condition expected = new ComparisonCondition("mapping", ComparisonOperator.EQ, "hello world");
-        String filter = "mapping eq 'hello world'";
-
-        Condition actual = parser.parse(Foo.class, filter);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void parseShouldAllowMappingOnExistedField() {
-        Condition expected = new ComparisonCondition("mapping", ComparisonOperator.EQ, "hello world");
-        String filter = "field eq 'hello world'";
-
-        Condition actual = parser.parse(Foo.class, filter);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void parseShouldAllowMappingOnNotExistedFieldButWithDeclaration() {
-        Condition expected = new ComparisonCondition("notInEntityMapping", ComparisonOperator.EQ, "hello world");
-        String filter = "notInEntityField eq 'hello world'";
-
-        Condition actual = parser.parse(Foo.class, filter);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void parseShouldNotAllowMappingOnNotExistedFieldAndWithoutDeclaration() {
-        String filter = "notExistedField eq 'hello world'";
-
-        parser.parse(Foo.class, filter);
-
-        fail();
-    }
-
-    public void parseShouldAllowSuperExistedField() {
-        Condition expected = new ComparisonCondition("baseMapping", ComparisonOperator.EQ, 0);
-        String filter = "baseMapping eq 0";
-
-        Condition actual = parser.parse(Foo.class, filter);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void parseShouldAllowSuperMappingOnExistedField() {
-        Condition expected = new ComparisonCondition("baseMapping", ComparisonOperator.EQ, 0);
-        String filter = "baseField eq 0";
-
-        Condition actual = parser.parse(Foo.class, filter);
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void parseShouldAllowSuperMappingOnNotExistedFieldButWithDeclaration() {
-        Condition expected = new ComparisonCondition("notInBaseEntityMapping", ComparisonOperator.EQ, "hello world");
-        String filter = "notInBaseEntityField eq 'hello world'";
 
         Condition actual = parser.parse(Foo.class, filter);
 

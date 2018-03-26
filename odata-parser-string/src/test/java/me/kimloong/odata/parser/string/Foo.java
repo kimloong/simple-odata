@@ -16,8 +16,6 @@
 
 package me.kimloong.odata.parser.string;
 
-import me.kimloong.odata.annotation.FieldMapping;
-
 import java.util.Date;
 
 /**
@@ -25,9 +23,7 @@ import java.util.Date;
  *
  * @author KimLoong
  */
-@FieldMapping(field = "field", mapping = "mapping", type = String.class)
-@FieldMapping(field = "notInEntityField", mapping = "notInEntityMapping", type = String.class)
-public class Foo extends BaseFoo {
+public class Foo {
 
     private boolean primitiveBoolean;
     private Boolean boxBoolean;
@@ -43,9 +39,8 @@ public class Foo extends BaseFoo {
     private String string;
     private Date date;
     private Type enumField;
-    private String mapping;
-    private String field1;
-    private String field2;
+    private String sortField1;
+    private String sortField2;
 
     public boolean isPrimitiveBoolean() {
         return primitiveBoolean;
@@ -159,28 +154,20 @@ public class Foo extends BaseFoo {
         this.enumField = enumField;
     }
 
-    public String getMapping() {
-        return mapping;
+    public String getSortField1() {
+        return sortField1;
     }
 
-    public void setMapping(String mapping) {
-        this.mapping = mapping;
+    public void setSortField1(String sortField1) {
+        this.sortField1 = sortField1;
     }
 
-    public String getField1() {
-        return field1;
+    public String getSortField2() {
+        return sortField2;
     }
 
-    public void setField1(String field1) {
-        this.field1 = field1;
-    }
-
-    public String getField2() {
-        return field2;
-    }
-
-    public void setField2(String field2) {
-        this.field2 = field2;
+    public void setSortField2(String sortField2) {
+        this.sortField2 = sortField2;
     }
 
     enum Type {

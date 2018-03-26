@@ -16,6 +16,8 @@
 
 package me.kimloong.odata.model;
 
+import java.util.Objects;
+
 /**
  * 字段信息
  *
@@ -38,5 +40,28 @@ public class ODataField {
 
     public Class getType() {
         return type;
+    }
+
+    @Override
+    public String toString() {
+        return type + " " + name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ODataField that = (ODataField) o;
+        return Objects.equals(name, that.name) &&
+                Objects.equals(type, that.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, type);
     }
 }

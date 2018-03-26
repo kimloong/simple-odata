@@ -29,12 +29,13 @@ public class CaseFormatFieldNameConverter implements FieldNameConverter {
     private final CaseFormat innerCaseFormat;
 
     private final CaseFormat outerCaseFormat;
-
+    private final boolean same;
     private Converter<String, String> caseFormatConverter;
 
     public CaseFormatFieldNameConverter(CaseFormat innerCaseFormat, CaseFormat outerCaseFormat) {
         this.innerCaseFormat = innerCaseFormat;
         this.outerCaseFormat = outerCaseFormat;
+        same = innerCaseFormat.equals(outerCaseFormat);
         caseFormatConverter = outerCaseFormat.converterTo(innerCaseFormat);
     }
 
@@ -44,6 +45,9 @@ public class CaseFormatFieldNameConverter implements FieldNameConverter {
 
     @Override
     public String convert(String outerFieldName) {
+        if (same) {
+            return outerFieldName;
+        }
         return caseFormatConverter.convert(outerFieldName);
     }
 
